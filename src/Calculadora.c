@@ -21,8 +21,6 @@ int main(void) {
 	int secondNumber;
 	int selectedOption;
 
-
-
 	if(getNumber(&firstNumber, "Por favor, ingrese el primer numero \n", "Sólo valores numéricos.", ATTEMPS) == 0) {
 
 		if (getNumber(&secondNumber, "Por favor, ingrese el segundo número\n", "Sólo valores numéricos.", ATTEMPS) == 0) {
@@ -66,7 +64,11 @@ int main(void) {
 			} else {
 				printf("Elija una opción correcta.");
 			}
+		} else {
+			printf("Agotó los intentos para ingresar el segundo número");
 		}
+	} else {
+		printf("\nHa agotado el número de intentos para el primer número. Reinicie la aplicación.");
 	}
 	return EXIT_SUCCESS;
 }

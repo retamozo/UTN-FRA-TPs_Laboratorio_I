@@ -8,14 +8,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-/* \brief getNumero: Solicita al usuario un número.
- * \param pResult: es la dirección de memoria (variable) donde guardará el número ingresado.
+/* \brief getNumero: Solicita al usuario un nï¿½mero.
+ * \param pResult: es la direcciï¿½n de memoria (variable) donde guardarï¿½ el nï¿½mero ingresado.
  * \param message: Texto informativo al momento de solicitar un valor al usuario.
- * \param errorMessage: Texto que se mostrará en caso de un rango de números inválido.
- * \param max: Valor máximo válido (no inclusive).
- * \param min: Valor mínimo válido (inclusive).
- * \param attemps: Es la cantidad de veces que será posible hacer esta operación para el usuario.
- * \return : 0 si la operación fue exitosa, -1 si se produjo un error.
+ * \param errorMessage: Texto que se mostrarï¿½ en caso de un rango de nï¿½meros invï¿½lido.
+ * \param max: Valor mï¿½ximo vï¿½lido (no inclusive).
+ * \param min: Valor mï¿½nimo vï¿½lido (inclusive).
+ * \param attemps: Es la cantidad de veces que serï¿½ posible hacer esta operaciï¿½n para el usuario.
+ * \return : 0 si la operaciï¿½n fue exitosa, -1 si se produjo un error.
  */
 
 int getNumber(int* pResult, char* message, char* errorMessage, int attemps) {
@@ -47,11 +47,11 @@ int getNumber(int* pResult, char* message, char* errorMessage, int attemps) {
 	return _exit;
 }
 
-/* brief add: Toma dos números por parametro y calcula una suma de ellos.
- * param pResult: dirección de memoria (variable) donde se guardará el resultado de la sumatoria de ambos números.
- * param firstNumber: primer número ingresado.
- * param secondNumber: segundo número ingresad por el usuario.
- * return : 0 si la operación fue exitosa, -1 si se produjo un error.
+/* brief add: Toma dos nï¿½meros por parametro y calcula una suma de ellos.
+ * param pResult: direcciï¿½n de memoria (variable) donde se guardarï¿½ el resultado de la sumatoria de ambos nï¿½meros.
+ * param firstNumber: primer nï¿½mero ingresado.
+ * param secondNumber: segundo nï¿½mero ingresad por el usuario.
+ * return : 0 si la operaciï¿½n fue exitosa, -1 si se produjo un error.
  * */
 
 int add(int* pResult, int firstNumber, int secondNumber) {
@@ -64,11 +64,11 @@ int add(int* pResult, int firstNumber, int secondNumber) {
 	return _exit;
 }
 
-/* brief subtract: Toma dos números por parametro y calcula una resta de ellos.
- * param pResult: dirección de memoria (variable) donde se guardará el resultado de la resta de ambos números.
- * param firstNumber: primer número ingresado.
- * param secondNumber: segundo número ingresad por el usuario.
- * return : 0 si la operación fue exitosa, -1 si se produjo un error.
+/* brief subtract: Toma dos nï¿½meros por parametro y calcula una resta de ellos.
+ * param pResult: direcciï¿½n de memoria (variable) donde se guardarï¿½ el resultado de la resta de ambos nï¿½meros.
+ * param firstNumber: primer nï¿½mero ingresado.
+ * param secondNumber: segundo nï¿½mero ingresad por el usuario.
+ * return : 0 si la operaciï¿½n fue exitosa, -1 si se produjo un error.
  * */
 
 int subtract(int *pResult, int firstNumber, int secondNumber) {
@@ -80,11 +80,11 @@ int subtract(int *pResult, int firstNumber, int secondNumber) {
 	return _exit;
 }
 
-/* brief multiply: Toma dos números por parametro y calcula una multiplicación de ellos.
- * param pResult: dirección de memoria (variable) donde se guardará el resultado de la multiplicación de ambos números.
- * param firstNumber: primer número ingresado.
- * param secondNumber: segundo número ingresad por el usuario.
- * return : 0 si la operación fue exitosa, -1 si se produjo un error.
+/* brief multiply: Toma dos nï¿½meros por parametro y calcula una multiplicaciï¿½n de ellos.
+ * param pResult: direcciï¿½n de memoria (variable) donde se guardarï¿½ el resultado de la multiplicaciï¿½n de ambos nï¿½meros.
+ * param firstNumber: primer nï¿½mero ingresado.
+ * param secondNumber: segundo nï¿½mero ingresad por el usuario.
+ * return : 0 si la operaciï¿½n fue exitosa, -1 si se produjo un error.
  * */
 
 int multiply(int *pResult, int firstNumber, int secondNumber) {
@@ -95,6 +95,12 @@ int multiply(int *pResult, int firstNumber, int secondNumber) {
 	}
 	return _exit;
 }
+
+/* \ brief factorial: realizar el factorial de un nÃºmero pedido al usuario
+ * \ param pResult: es un puntero al espacio de memoria donde estÃ¡ el valor obtenido del usuario
+ * \ param operator: operador por el cual se debe obtener el factoreal.
+ * \ retorna (0) si estÃ¡ ok / retorna (-1) si mal
+ */
 
 int factorial(int *pResult, int operator) {
 
@@ -118,14 +124,14 @@ int factorial(int *pResult, int operator) {
 	return _exit;
 }
 
-/* \ brief division: dados un divisor y un dividendo, se realiza la operación de división de los mismos.
- * \ param pResult: es un puntero al espacio de memoria donde está el valor obtenido del usuario.
- * \ param divisor: es el número a dividir.
- * \ param dividend: es la base por la cual se dividirá al divisor.
- * \ retorna (0) si está ok / retorna (-1) si mal.
+/* \ brief division: dados un divisor y un dividendo, se realiza la operaciï¿½n de divisiï¿½n de los mismos.
+ * \ param pResult: es un puntero al espacio de memoria donde estï¿½ el valor obtenido del usuario.
+ * \ param divisor: es el nï¿½mero a dividir.
+ * \ param dividend: es la base por la cual se dividirï¿½ al divisor.
+ * return : 0 si la operaciï¿½n fue exitosa, -1 si se produjo un error.
  */
 
-int division(float* pResult, int divisor, int dividend) {
+int division(int* pResult, int divisor, int dividend) {
 	int _exit = -1;
 	if(pResult != NULL)	{
 		if (dividend != 0) {
