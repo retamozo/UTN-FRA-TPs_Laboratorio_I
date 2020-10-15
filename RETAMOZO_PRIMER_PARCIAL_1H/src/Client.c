@@ -7,6 +7,7 @@
 #include <string.h>
 #include "utn.h"
 #include "Client.h"
+#include "Advertisement.h"
 
 static int createNewId(void);
 
@@ -104,8 +105,33 @@ int addClient(Client *clientArr, int len){
 	return retorno;
 };
 
+/**
+ * \brief At this point we should be pretty confident about addClient fn works as we expected, so this fn add a sort of dummy data for testing purposes and save time adding clients manually.
+ * \param Client* clientArr: Pointer to array of clients
+ * \param int arrLen: Array length
+ *
+ */
+
+void addClient_FORCED(Client *clientArr, int arrLen) {
+
+	if(clientArr != NULL && arrLen > 0 ) {
+		Client clientBuff[2];
+		char name[][NAMES_LEN]={"Pepe","Dardo",	"Moni"};
+		char lastName[][NAMES_LEN]={"Argento","Fuseneco","Argento"};
+		char cuit[][CUIT_LEN]={"23-34797474-9","26-24935994-7","21-45045347-5"};
+		for(int i = 0; i < 2; i++){
+			strncpy(clientBuff[i].name, name[i],arrLen);
+			strncpy(clientBuff[i].lastName, lastName[i],arrLen);
+			strncpy(clientBuff[i].cuit, cuit[i],arrLen);
+			clientBuff[i].isEmpty = FALSE;
+			clientBuff[i].id = createNewId();
+		}
+		addClient(clientBuff, arrLen);
+	}
+}
+
 /*
- *brief Loop through a Client array, looking for a 'isEmpty' field flaged as TRUE and the ID of the Client array matches with the given ID
+ *brief Loop through a Client array, looking for a 'isEmpty' field flaged as FALSE and the ID of the Client array matches with the given ID
  *param Client* clientArr. a array pointer with a Client structure.
  *param int id: Client's id to find.
  *param int limit: Lenght of pArray.
@@ -117,10 +143,12 @@ int findClientById(Client *clientArr, int id, int limit, int *pResult) {
 	int retorno = -1;
 	if (clientArr != NULL && limit > 0 && id > 0 && pResult != NULL) {
 		for (int i = 0; i < limit; i++) {
-			if (clientArr[i].id == id && clientArr[i].isEmpty == TRUE) {
+			if (clientArr[i].id == id && clientArr[i].isEmpty == FALSE) {
 				*pResult = i;
 				retorno = 0;
 				break;
+			} else {
+				printf("\n Client doesn't exists.");
 			}
 		}
 	}
@@ -147,6 +175,28 @@ int checkIfCuitAlreadyExists(Client *clientArr, int len, char *cuit, int index){
 	}
 	return retornar;
 }
+
+//lient *clientArr, int id, int limit, int *pResult
+
+int deleteClientAndAddsById(Client *clientArr, Advertisement *addArr, int clientId, int clientLEN, int addLEN){
+	int retorno = -1;
+    if(clientArr != NULL && addArr != NULL && clientLEN < MAX_CLIENTS && addLEN < MAX_ADVERTISEMENT){
+    	int clientIndex;
+    	int addIndex;
+    	if(findClientById(clientArr, clientId, clientLEN, &clientIndex) == 0 &&
+    	   findAddByClientId(addArr, addLEN, clientId, &addIndex) == 0 ){
+    		printAddsByClientId(addArr, clientId, addLEN);
+    		deleteAdvertisement(addArr, addLEN, addIndex);
+    		retorno = 0;
+    	}
+    }
+    return retorno;
+}
+
+
+
+
+
 
 /* Brief - given a array with a Client structure (client previously initiated), find the Client by the Id, and let user modify her/his Client data.
  * param *clientArr - Client array pointer.

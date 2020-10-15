@@ -5,6 +5,8 @@
 
 #ifndef UTN_H_
 #define UTN_H_
+#define TRUE 1
+#define FALSE 0
 
 int isString(char cadena[], int limite);
 int myGets(char cadena[], int longitud);
