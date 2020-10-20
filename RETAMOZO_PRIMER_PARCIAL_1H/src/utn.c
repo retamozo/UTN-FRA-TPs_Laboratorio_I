@@ -16,6 +16,67 @@ static int isNumericChar(char *cadena);
 static int getInt(int *pResultado);
 static int getFloat(float *pFloat);
 static int isValidCuit(char cuit[]);
+static int checkAlphaNum(char* string, int len);
+
+/**
+ * \brief utn_getAlphaNum: Asks the user for an alphanumeric value
+ * \param char* message: Message for the user
+ * \param char* errMessage: Error message
+ * \param int* pValue: Pointer to store value given by user
+ * \param int retries: amount of retries permitted
+ * \param int len: length allowed for the value entered.
+ * \return (-1) Error / (0) Ok
+ */
+
+int getStringAlphanumeric(char* message, char* errMessage, char* pValue,int retries, int len){
+	char bufferString[len];
+	int retorno = -1;
+
+	if(message != NULL && errMessage != NULL && pValue != NULL && retries >= 0 && len > 0){
+		do {
+			printf("%s",message);
+			if(myGets(bufferString, len) == 0 &&
+			   strnlen(bufferString,sizeof(bufferString)-1)<= len &&
+			   checkAlphaNum(bufferString,len) == 0 ) {
+				strncpy(pValue,bufferString,len);
+				retorno = 0;
+				break;
+			} else 	{
+				printf("%s Quedan %d reintentos\n",errMessage, retries);
+				retries--;
+			}
+		} while(retries >= 0);
+	}
+	return retorno;
+}
+
+/**
+ * \brief checkAlphaNum: Checks the string for invalid characters
+ * Allows upper and lower case letters, numbers and spaces
+ * \param char* string: Pointer to string to check
+ * \param int len: max lenght allowed of the string
+ * \return (-1) Error / (0) Ok
+ */
+
+static int checkAlphaNum(char* string, int len){
+	int retorno = 0;
+	if(string != NULL && len > 0) {
+		for(int i=0; i<=len && string[i] != '\0';i++) {
+			if((string[i] != ' ') &&
+			   (string[i] != '.') &&
+			   (string[i] != '-') &&
+			   (string[i] != '@') &&
+			   (string[i] < 'a' || string[i] > 'z') &&
+			   (string[i] < 'A' || string[i] > 'Z') &&
+			   (string[i] < '0' || string[i] > '9')){
+				retorno = -1;
+				break;
+			}
+		}
+	}
+	return retorno;
+}
+
 
 /**
  * \brief convierte la cadena recibida en un número entero.
@@ -63,8 +124,8 @@ static int isNumericChar(char *cadena) {
  * maximo : valor maximo valido
  * Reintentos: cantidad de veces que tiene el usuario para ingresar un valor valido
  * Return 0= OK.Return -1: error.
- *
  */
+
 int getNumberFloat(float *pResultado, char *mensaje, char *mensajeError,
 		float minimo, float maximo, int reintentos) {
 	int retorno = -1;
@@ -97,6 +158,7 @@ int getNumberFloat(float *pResultado, char *mensaje, char *mensajeError,
  * Return 1: OK. return 0:error.
  *
  */
+
 static int getFloat(float *pFloat) {
 	int retorno = 0;
 	char bufferFloat[5000];
@@ -116,8 +178,8 @@ static int getFloat(float *pFloat) {
  * cadena: cadena de caracteres a ser analizada
  * limite: limite de la cadena
  * Return: 1 (verdadero) si la cadena es flotante , 0 (falso) si no y -1 en caso de ERROR de parametro
- *
  */
+
 static int isFloat(char *floatArr, int limite) {
 	int retorno = -1;
 	int i = 0;
@@ -146,6 +208,7 @@ static int isFloat(char *floatArr, int limite) {
 	}
 	return retorno;
 }
+
 /*
  * \brief valida que la cadena recibida sea un string valido.
  * \param char mesaje: Mensaje impreso para obtener una cadena
@@ -155,8 +218,6 @@ static int isFloat(char *floatArr, int limite) {
  * \param int limite: longitud de la cadena.
  * \return -1: failed  Return 0:Ok.
  */
-
-
 
 int getString(char mensaje[], char mensajeError[], char pResultado[], int reintentos, int limite) {
 	int retorno = -1;

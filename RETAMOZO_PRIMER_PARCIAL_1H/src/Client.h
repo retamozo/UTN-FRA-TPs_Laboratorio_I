@@ -11,7 +11,6 @@
 #define NAMES_LEN 20
 #define CUIT_LEN 14
 #include "utn.h"
-#include "Advertisement.h"
 
 typedef struct {
 	int id;
@@ -30,7 +29,7 @@ int isClientPositionUsed(Client *clientArr, int len);
 int findFreeIndex(Client *clientArr, int limit, int *pResult);
 int printClientDetails(Client *clientArr, int len);
 int checkIfCuitAlreadyExists(Client *clientArr, int len, char *cuit, int index);
-void addClient_FORCED(Client *clientArr, int arrLen);
-int deleteClientAndAddsById(Client *clientArr, Advertisement *addArr, int clientId, int clientLEN, int addLEN);
+int addClient_FORCED(Client *clientArr, int arrLen);
+int helper_findClientIndexByCuit(Client *clientArr, char cuit, int limit, Client *pResult);
 
 #endif /* CLIENT_H_ */

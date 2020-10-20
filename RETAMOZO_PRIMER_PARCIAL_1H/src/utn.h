@@ -15,5 +15,7 @@ int getNumber(char *mensaje, char *mensajeError, int *pResultado, int reintentos
 int getNumberFloat(float *pResultado, char *mensaje, char *mensajeError, float minimo, float maximo, int reintentos);
 int getCuitCode(char msg[], char msgError[], char pResult[], int attemps, int limit);
 int getMenu(int *pResult, int attemps, int min, int max);
+//getStringAlphanumeric("\nEnter a brief description for the new advisement.:\n", "\nERROR! Invalid characters \n: ", buffer.description, 3, MAX_TEXT_ADD)==0){
 
+int getStringAlphanumeric(char msg[], char msgError[], char *pResult, int attemps, int len);
 #endif /* UTN_H_ */

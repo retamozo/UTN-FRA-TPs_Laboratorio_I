@@ -41,7 +41,7 @@ int deleteClient(Client *clientArr, int len, int id) {
 	if(clientArr != NULL && len > 0 && isClientPositionUsed(clientArr, len) == 0) {
 		int selectedOpt;
 		int index;
-		if(getNumber("\n You are about to delete a client. Do you want proced? 1 - YES | 2 - NO \n ", "\nError! Select a valid option.", &selectedOpt, 2, 1, 2) == 0 &&
+		if(getNumber("\n You are about to delete a client. Do you want proced? 1 - YES | 2 - NO \n ", "\nError! Select a valid option.", &selectedOpt, 3, 9, 1) == 0 &&
 			selectedOpt==1 &&
 			findClientById(clientArr, len, id, &index) ==0 &&
 			clientArr[index].isEmpty==FALSE &&
@@ -112,24 +112,26 @@ int addClient(Client *clientArr, int len){
  *
  */
 
-void addClient_FORCED(Client *clientArr, int arrLen) {
 
+int addClient_FORCED(Client *clientArr, int arrLen) {
+    int retorno = 1;
 	if(clientArr != NULL && arrLen > 0 ) {
-		Client clientBuff[2];
+		Client clientBuff[3];
 		char name[][NAMES_LEN]={"Pepe","Dardo",	"Moni"};
 		char lastName[][NAMES_LEN]={"Argento","Fuseneco","Argento"};
 		char cuit[][CUIT_LEN]={"23-34797474-9","26-24935994-7","21-45045347-5"};
-		for(int i = 0; i < 2; i++){
+		for(int i = 0; i < 4; i++){
 			strncpy(clientBuff[i].name, name[i],arrLen);
 			strncpy(clientBuff[i].lastName, lastName[i],arrLen);
 			strncpy(clientBuff[i].cuit, cuit[i],arrLen);
 			clientBuff[i].isEmpty = FALSE;
 			clientBuff[i].id = createNewId();
 		}
-		addClient(clientBuff, arrLen);
+		retorno = 0;
 	}
+	printf("ALGO SALIO MAL");
+	return retorno;
 }
-
 /*
  *brief Loop through a Client array, looking for a 'isEmpty' field flaged as FALSE and the ID of the Client array matches with the given ID
  *param Client* clientArr. a array pointer with a Client structure.
@@ -147,52 +149,79 @@ int findClientById(Client *clientArr, int id, int limit, int *pResult) {
 				*pResult = i;
 				retorno = 0;
 				break;
-			} else {
-				printf("\n Client doesn't exists.");
 			}
 		}
 	}
 	return retorno;
 }
 
+/*
+ *brief Loop through a Client array, looking for a 'isEmpty' field flaged as FALSE and the CUIT of the Client array matches with the given another CUIT passed as argument.
+ *param Client* clientArr. a array pointer with a Client structure.
+ *param int cuit: Client's id to find.
+ *param int limit: Lenght of pArray.
+ *param int *pResult pointer to place the found index.
+ * return (0) OK | (-1) ERROR
+ */
+
+int helper_findClientIndexByCuit(Client *clientArr, char cuit, int limit, Client *pResult){
+	int retorno = -1;
+	printf("entre a HELPER");
+	printf("CUIT A COMPARAR >>> %d", cuit);
+		if (clientArr != NULL && limit > 0 && cuit > 0 && pResult != NULL) {
+			for (int i = 0; i < limit; i++) {
+				if (strcmp(clientArr[i].cuit, &cuit) == 0 && clientArr[i].isEmpty == FALSE) {
+					printf("entre al IF");
+
+					*pResult = clientArr[i];
+					retorno = 0;
+					break;
+				}
+			}
+		}
+		return retorno;
+}
+
+/**
+ * \brief This one prints all fields of a Client array structure
+ * \param Client *addArr: Pointer to a Client array
+ * \param int len: Length of the array
+ * \return (0) OK | (-1) FAILURE
+ */
+int printClientDetails(Client *clientArr, int len) {
+	int retorno = -1;
+	if(clientArr) {
+		for(int i=0;i<len;i++) {
+			if(clientArr[i].isEmpty == FALSE){
+				printf("\nID: %d - Name: %s - Last Name: %s - CUIT: %s\n", clientArr[i].id, clientArr[i].name, clientArr[i].lastName, clientArr[i].cuit);
+				retorno = 0;
+			}
+		}
+	}
+	return retorno;
+}
 /**
  * \brief Compare a new desired CUIT with a already created one, asking for Cuit and index.
- * \param Client *list: Pointer to a Client array
+ * \param Client *addArr: Pointer to a Client array
  * \param int len: Length of the array
  * \param char *cuit: Pointer of the cuit to compare
  * \param int index: receive the index of an already registered client (to skip)
  * \return (-1) if something went wrong or (0) if OK
  */
 int checkIfCuitAlreadyExists(Client *clientArr, int len, char *cuit, int index){
-	int retornar = 0;
+	int retorno = 0;
 	if(clientArr != NULL && len > 0) {
 		for(int i = 0; i < len; i++) {
 			if(i != index && strncmp(clientArr[i].cuit, cuit, CUIT_LEN)==0) {
 				printf("\nCUIT already exists (CUIT found)\n");
-				retornar = 1;
+				retorno = 1;
 			}
 		}
 	}
-	return retornar;
+	return retorno;
 }
 
 //lient *clientArr, int id, int limit, int *pResult
-
-int deleteClientAndAddsById(Client *clientArr, Advertisement *addArr, int clientId, int clientLEN, int addLEN){
-	int retorno = -1;
-    if(clientArr != NULL && addArr != NULL && clientLEN < MAX_CLIENTS && addLEN < MAX_ADVERTISEMENT){
-    	int clientIndex;
-    	int addIndex;
-    	if(findClientById(clientArr, clientId, clientLEN, &clientIndex) == 0 &&
-    	   findAddByClientId(addArr, addLEN, clientId, &addIndex) == 0 ){
-    		printAddsByClientId(addArr, clientId, addLEN);
-    		deleteAdvertisement(addArr, addLEN, addIndex);
-    		retorno = 0;
-    	}
-    }
-    return retorno;
-}
-
 
 
 
@@ -229,43 +258,25 @@ int modifyClient(Client *clientArr, int len){
 	return retorno;
 }
 
-/**
- * \brief This one prints all fields of a Client array structure
- * \param Client *list: Pointer to a Client array
- * \param int len: Length of the array
- * \return (0) OK | (-1) FAILURE
- */
-int printClientDetails(Client *clientArr, int len) {
-	int retorno = -1;
-	if(clientArr) {
-		for(int i=0;i<len;i++) {
-			if(clientArr[i].isEmpty == FALSE){
-				printf("\nID: %d - Name: %s - Last Name: %s - CUIT: %s\n", clientArr[i].id, clientArr[i].name, clientArr[i].lastName, clientArr[i].cuit);
-				retorno = 0;
-			}
-		}
-	}
-	return retorno;
-}
 
 
 /**
  * \brief Loop through a Client array, and check if the isEmpty prop is false (which means a client exists)
- * \param Client *list: Pointer to a Client array
+ * \param Client *addArr: Pointer to a Client array
  * \param int len: Length of the array
  * \return (-1) if something went wrong, (0) if everything is OK
  */
 int isClientPositionUsed(Client *clientArr, int len) {
-	int retornar = -1;
+	int retorno = -1;
 	if(clientArr != NULL && len > 0) {
 		for(int i=0; i<len; i++) {
 			if(clientArr[i].isEmpty == FALSE){
-				retornar = 0;
+				retorno = 0;
 				break;
 			}
 		}
 	}
-	return retornar;
+	return retorno;
 }
 
 
