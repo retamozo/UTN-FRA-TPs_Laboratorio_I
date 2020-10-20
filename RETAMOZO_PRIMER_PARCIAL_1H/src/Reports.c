@@ -36,7 +36,7 @@ int startReportMenu(Client *clientArr, int clientLen, Advertisement *addArr, int
 							  &option, 3, 10, 1) == 0) {
 									switch(option) {
 										case 1:
-											if(report_clientWithMoreAdvertisements(clientArr, clientLen, addArr, adLen, 1) == 0){
+											if(report_clientWithMoreOrLessAdvertisements(clientArr, clientLen, addArr, adLen, 1) == 0){
 												retorno = 0;
 											}
 											 break;
@@ -85,7 +85,7 @@ int startReportMenu(Client *clientArr, int clientLen, Advertisement *addArr, int
 											}
 										break;
 										case 8:
-											if(report_clientWithMoreAdvertisements(clientArr, clientLen, addArr, adLen, 2) == 0){
+											if(report_clientWithMoreOrLessAdvertisements(clientArr, clientLen, addArr, adLen, 2) == 0){
 											   retorno = 0;
 											}
 										break;
@@ -147,7 +147,7 @@ int report_advertisementsByClientCuitPrompt(Client *clientArr, int clientLen, Ad
  * \return (-1) if something went wrong, (0) if everything is OK
  * */
 
-int report_clientWithMoreAdvertisements(Client *clientArr, int clientLen, Advertisement *adArr, int adLen, int desiredQuantity){
+int report_clientWithMoreOrLessAdvertisements(Client *clientArr, int clientLen, Advertisement *adArr, int adLen, int desiredQuantity){
 	int retorno=-1;
 	int currentCounter;
 	int maxCounter;
