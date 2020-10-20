@@ -36,7 +36,7 @@ int startReportMenu(Client *clientArr, int clientLen, Advertisement *addArr, int
 							  &option, 3, 10, 1) == 0) {
 									switch(option) {
 										case 1:
-											if(report_clientWithMoreAdvertisements(clientArr, clientLen, addArr, adLen) == 0){
+											if(report_clientWithMoreAdvertisements(clientArr, clientLen, addArr, adLen, 1) == 0){
 												retorno = 0;
 											}
 											 break;
@@ -85,7 +85,9 @@ int startReportMenu(Client *clientArr, int clientLen, Advertisement *addArr, int
 											}
 										break;
 										case 8:
-											//f) Cliente con menos avisos
+											if(report_clientWithMoreAdvertisements(clientArr, clientLen, addArr, adLen, 2) == 0){
+											   retorno = 0;
+											}
 										break;
 
 										case 9:
@@ -145,12 +147,14 @@ int report_advertisementsByClientCuitPrompt(Client *clientArr, int clientLen, Ad
  * \return (-1) if something went wrong, (0) if everything is OK
  * */
 
-int report_clientWithMoreAdvertisements(Client *clientArr, int clientLen, Advertisement *adArr, int adLen){
+int report_clientWithMoreAdvertisements(Client *clientArr, int clientLen, Advertisement *adArr, int adLen, int desiredQuantity){
 	int retorno=-1;
 	int currentCounter;
 	int maxCounter;
+	int lessCounter;
 	Client bufferMax;
 	if(clientArr!=NULL && clientLen> 0 && adArr!=NULL && adLen> 0 ){
+	   if(desiredQuantity == 1){
 		for(int i=0;i<clientLen;i++){
 			if(helper_addCounterClient(adArr, adLen, clientArr[i].id, &currentCounter, "NORMAL_CLIENT_COUNTER") == 0 &&
 					( i==0 || currentCounter > maxCounter)){
@@ -162,8 +166,24 @@ int report_clientWithMoreAdvertisements(Client *clientArr, int clientLen, Advert
 				printf("--------------------------------------");
 				printf("\nCUIT: %s advertisements (quantity): %d \n", bufferMax.cuit, maxCounter);
 				printf("--------------------------------------");
-			retorno = 0;
-		  }
+				retorno = 0;
+	   } else {
+		   if(desiredQuantity == 2){
+				for(int i=0;i<clientLen;i++){
+					if(helper_addCounterClient(adArr, adLen, clientArr[i].id, &currentCounter, "NORMAL_CLIENT_COUNTER") == 0 &&
+							( i==0 || currentCounter < lessCounter)){
+								lessCounter = currentCounter;
+								bufferMax = clientArr[i];
+							}
+						}
+				printf("\nClient with less advertisement is :\n ");
+				printf("--------------------------------------");
+				printf("\nCUIT: %s advertisements (quantity): %d \n", bufferMax.cuit, lessCounter);
+				printf("--------------------------------------");
+				retorno = 0;
+		   }
+	   }
+	}
 		return retorno;
 }
 
