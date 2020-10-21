@@ -75,6 +75,9 @@ int startReportMenu(Client *clientArr, int clientLen, Advertisement *addArr, int
 											 break;
 										case 6:
 											//	d) Imprimir lista de rubros ordenados de menor a mayor (sin repetir)
+											if(sortByCategory(addArr, adLen) == 0){
+												pintAdvertisementsDetails(addArr, adLen);
+											}
 											break;
 										case 7:
 											//e) Cantidad de avisos activos totales OK
@@ -308,6 +311,8 @@ int report_quantityOfPausedOrActiveAdvertisements(Advertisement *adArray, int le
 	}
 	return retorno;
 }
+
+
 
 /* TAREA
 d) Imprimir lista de rubros ordenados de menor a mayor (sin repetir)

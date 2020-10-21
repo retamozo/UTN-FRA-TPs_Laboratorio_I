@@ -44,5 +44,6 @@ int helper_addCounterByAdvertisementCategorie(Advertisement *adArray, int len, i
 int helper_findPausedAdvertisements(Advertisement *adArray, int len);
 int reanudeAdvertisements(Advertisement *addArr, int len, Client *clientArr, int clientLen);
 int helper_addCounterByAdvertisementCategorie(Advertisement *adArray, int len, int categoryCode, int *pCounter);
+int sortByCategory(Advertisement *pArray,int len);
 
 #endif /* ADVERTISEMENT_H_ */

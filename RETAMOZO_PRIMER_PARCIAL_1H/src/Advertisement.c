@@ -392,3 +392,33 @@ int helper_addCounterByAdvertisementCategorie(Advertisement *adArray, int len, i
 	}
 	return retorno;
 }
+
+
+/* Brief given a Advertisement list, prints all category codes sorted
+ * param Advertisement pArray: pointer to advertisement array.
+ * param len: lenght of advertisements.
+ * return 0 if OK | -1 if FAILURE
+ * */
+
+int sortByCategory(Advertisement *pArray,int len){
+	int retorno=-1;
+	int sorted;
+	Advertisement buffAd;
+	if(pArray!=NULL && len > 0 ){
+		do{
+			sorted = TRUE;
+			for(int i = 0; i < (len -1 ); i++){
+				if(pArray[i].isEmpty == FALSE && ( pArray[i].categoryCode < pArray[i + 1].categoryCode )){
+					buffAd = pArray[i];
+					pArray[i] = pArray[i+1];
+					pArray[i+1] = buffAd;
+					sorted =FALSE;
+				}
+			}
+		} while(sorted == FALSE);
+		retorno = 0;
+	}
+	return retorno;
+}
+
+
