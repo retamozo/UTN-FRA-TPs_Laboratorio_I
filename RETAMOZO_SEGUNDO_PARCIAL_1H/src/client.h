@@ -1,36 +1,45 @@
 /*
- * client.h
+ * Client.h
  *
- *  Created on: Nov 20, 2020
+ *  Created on: 23 nov. 2020
  *      Author: Enzo
  */
 
 #ifndef CLIENT_H_
 #define CLIENT_H_
-
-#define NAME_LEN 50
+#define NAME_CLIENT_LEN 100
 #define CUIT_LEN 14
+#define BUFFER_SIZE 1024
 
-/*Definición de mensajes útiles*/
-
-#define CLI_ADD_NEW_MESSAGE "\n CLIENTE AÑADIDO EXITOSAMENTE\n"
-#define CLI_ADD_NEW_ERROR_MESSAGE "\n LO SENTIMOS. OCURRIÓ UN ERROR TRATANDO DE CREAR EL CLIENTE.\n"
-#define CLI_GET_NAME_MESSAGE "\n POR FAVOR, INGRESE SU NOMBRE\n"
-#define CLI_GET_LAST_NAME_MESSAGE "\n POR FAVOR, INGRESE SU APELLIDO\n"
-#define CLI_GET_NAMES_ERROR_MESSAGE "\n ERROR ! INTENTE DE NUEVO\n"
-#define CLI_GET_CUIT_MESSAGE "\n POR FAVOR, INGRESE CUIT\n"
-#define CLI_GET_CUIT_ERROR_MESSAGE "\n ERROR! INGRESE CUIT VÁLIDO.\n"
-
-
-typedef struct{
-	int clientId;
-	char name[NAME_LEN];
-	char lastName[NAME_LEN];
-	char cuit[CUIT_LEN];
+typedef struct
+{
+	char name [NAME_CLIENT_LEN];
+	char lastName [NAME_CLIENT_LEN];
+	char cuit [CUIT_LEN];
+	int idClient;
 }Client;
 
+Client* client_new();
+Client* client_newParametros(char* id, char* name,char* lastName, char* cuit);
+Client* client_newWithParameters(int id, char* name, char* lastName, char* cuit);
+void client_printHeader();
+int client_printByIndex(LinkedList* pArrayListClient, int index);
+void client_delete(Client* this);
+int client_fCriterioFindMaxId (void* pElement);
+int client_findByCuit (LinkedList* this, char* cuit);
+int client_findIndexById (LinkedList* this, int idClient, int* index);
+int client_searchMaxId(LinkedList *pArrayClients);
 
-Client* cli_add(void);
-Client* cli_new();
-void cli_delete(Client* this);
+
+int client_setName(Client* this, char* name);
+int client_getName(Client* this, char* name);
+int client_setLastName(Client* this, char* lastName);
+int client_getLastName(Client* this, char* lastName);
+int client_setCuit(Client* this, char* cuit);
+int client_getCuit(Client* this, char* cuit);
+int client_setIdClient(Client* this, int idClient);
+int client_setIdTxt(Client* this, char* idClient);
+int client_getIdClient(Client* this, int* idClient);
+
+
 #endif /* CLIENT_H_ */

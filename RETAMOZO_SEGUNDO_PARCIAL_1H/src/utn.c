@@ -1,74 +1,99 @@
-/*
- * utn.c
- *
- *
- *      Author: Enzo Retamozo - UTN Libreria de funciones comunes.
- */
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "utn.h"
-#define LIMITE_STRING 4059
+#define STRING_LEN 50
+#define ARRAY_SIZE 4096
 
-static int isFloat(char *arrays, int limite);
-static int isNumericChar(char *cadena);
-static int getInt(int *pResultado);
-static int getFloat(float *pFloat);
-static int isValidCuit(char cuit[]);
-static int checkAlphaNum(char* string, int len);
-
-/**
- * \brief utn_getAlphaNum: Asks the user for an alphanumeric value
- * \param char* message: Message for the user
- * \param char* errMessage: Error message
- * \param int* pValue: Pointer to store value given by user
- * \param int retries: amount of retries permitted
- * \param int len: length allowed for the value entered.
- * \return (-1) Error / (0) Ok
+static int utn_myGets(char *array, int lenght);
+static int utn_verifyNumArray(char array[]);
+static int utn_verifyCharArray(char *pArray);
+static int utn_verifyFloat(char array[]);
+static int isAlphaNumeric(char* pResult);
+static int isCuit(char* pResult);
+//ESTATICAS
+/*
+ * \brief static function to use instead of scanf(); to pick up user data
+ * \param char* array, pointer to array
+ * \param int lenght, limit of array
  */
-
-int getStringAlphanumeric(char* message, char* errMessage, char* pValue,int retries, int len){
-	char bufferString[len];
+static int utn_myGets(char *array, int lenght) {
 	int retorno = -1;
-
-	if(message != NULL && errMessage != NULL && pValue != NULL && retries >= 0 && len > 0){
-		do {
-			printf("%s",message);
-			if(myGets(bufferString, len) == 0 &&
-			   strnlen(bufferString,sizeof(bufferString)-1)<= len &&
-			   checkAlphaNum(bufferString,len) == 0 ) {
-				strncpy(pValue,bufferString,len);
-				retorno = 0;
-				break;
-			} else 	{
-				printf("%s Quedan %d reintentos\n",errMessage, retries);
-				retries--;
-			}
-		} while(retries >= 0);
+	if (array != NULL && lenght > 0 && fgets(array, lenght, stdin) == array) {
+		fflush(stdin);
+		if (array[strlen(array) - 1] == '\n' &&array[0]!='\n') {
+			array[strlen(array) - 1] = '\0';
+		}
+		retorno = 0;
 	}
 	return retorno;
 }
-
-/**
- * \brief checkAlphaNum: Checks the string for invalid characters
- * Allows upper and lower case letters, numbers and spaces
- * \param char* string: Pointer to string to check
- * \param int len: max lenght allowed of the string
- * \return (-1) Error / (0) Ok
+/*
+ * \brief Verifies if given array of number is a valid integer number
+ * \param char* pArray, string to be asses
+ * \return [1] if ok / [0] if error
  */
-
-static int checkAlphaNum(char* string, int len){
+static int utn_verifyNumArray(char array[]) {
+	int retorno = 1;
+	int i = 0;
+	if (array != NULL) {
+		if (array[0] == '-') {
+			i = 1;
+		}
+		for (; array[i] != '\0'; i++) {
+			if ((array[i] > '9' || array[i] < '0')) {
+				retorno = 0;
+				break;
+			}
+		}
+	}
+	return retorno;
+}
+/*
+ * \brief Verifies if given array of number is a valid float number
+ * \param char* pArray, string to be asses
+ * \return [1] if ok / [0] if error
+ */
+static int utn_verifyFloat(char array[])
+{
+	int retorno = 1;
+	int i = 0;
+	int commaCounter = 0;
+	if (array != NULL && strlen(array)>0)
+	{
+		if (array[0] == '-')
+		{
+			i = 1;
+		}
+		for (; array[i]!='\0'; i++)
+		{
+			if(array[i]=='.')
+			{
+				commaCounter++;
+			}
+			if(commaCounter>1 || ((array[i] > '9' || array[i] < '0') && array[i]!='.'))
+			{
+				retorno = 0;
+				break;
+			}
+		}
+	}
+	return retorno;
+}
+/*
+ * \brief Verifies if given string as a pointer is a valid string
+ * \param char* pArray, string to be asses
+ * \return [1] if ok / [0] if error
+ */
+static int utn_verifyCharArray(char *pArray)
+{
 	int retorno = 0;
-	if(string != NULL && len > 0) {
-		for(int i=0; i<=len && string[i] != '\0';i++) {
-			if((string[i] != ' ') &&
-			   (string[i] != '.') &&
-			   (string[i] != '-') &&
-			   (string[i] != '@') &&
-			   (string[i] < 'a' || string[i] > 'z') &&
-			   (string[i] < 'A' || string[i] > 'Z') &&
-			   (string[i] < '0' || string[i] > '9')){
+	int i;
+	if (pArray != NULL)
+	{
+		for (i = 0; pArray[i] != '\0'; i++)
+		{
+			if ((pArray[i] < 'a' || pArray[i] > 'z') && (pArray[i] < 'A' || pArray[i] > 'Z') && (pArray[i] != 32) && (pArray[i]!='.'))
+			{
 				retorno = -1;
 				break;
 			}
@@ -76,321 +101,297 @@ static int checkAlphaNum(char* string, int len){
 	}
 	return retorno;
 }
-
-
-/**
- * \brief convierte la cadena recibida en un número entero.
- * \param puntero con el string validado.
- * \return 0: ok. return -1: fallo.
- */
-
-static int getInt(int *pResultado) {
-	int retorno = -1;
-	char buffer[4096];
-	if (myGets(buffer, sizeof(buffer)) == 0 && isNumericChar(buffer)) {
-		retorno = 0;
-		*pResultado = atoi(buffer);
-	}
-	return retorno;
-}
-
 /*
- * \brief valida que la cadena recibida sea un número entero.
- * \param puntero con la cadena validada.
- * \return 1: true, si es un número entero.Return 0: false, no lo es.
+ * \brief Verifies if given string as a pointer is a valid alphanumeric string
+ * \param char* pArray, string to be asses
+ * \return [1] if ok / [0] if error
  */
-
-static int isNumericChar(char *cadena) {
+static int isAlphaNumeric(char* pResult)
+{
 	int retorno = 1;
-	int i = 0;
-	if (cadena[0] == '-') {
-		i = 1;
-	}
-	for (; cadena[i] != '\0'; i++) {
-		if (cadena[i] > '9' || cadena[i] < '0') {
-			retorno = 0;
-			break;
+	int i;
+	if(pResult != NULL)
+	{
+		for(i=0;pResult[i] != '\0';i++)
+		{
+			if(pResult[i] != ' ' && (pResult[i] < 'a' || pResult[i] > 'z') && (pResult[i] < 'A' || pResult[i] > 'Z') && (pResult[i] < '0' || pResult[i] > '9') && pResult[i]!=',' && pResult[i]!='.')
+			{
+				retorno = 0;
+				break;
+			}
 		}
 	}
 	return retorno;
-
 }
 /*
- * brief : Solicita un numero flotante al usuario.
- * pResultado : puntero con el valor validado.
- * mensaje : El mensaje que imprime para pedir un valor.
- * mensajeError: mensaje que impreso si el rango no es valido.
- * minimo : valor minimo valido
- * maximo : valor maximo valido
- * Reintentos: cantidad de veces que tiene el usuario para ingresar un valor valido
- * Return 0= OK.Return -1: error.
+ * \brief Verifies if given string as a pointer is a valid CUIT
+ * \param char* pArray, string to be asses
+ * \return [1] if ok / [0] if error
+ */
+static int isCuit(char* pResult)
+{
+	int result;
+	int i;
+	int dashCounter;
+	if(pResult != NULL && strlen(pResult)>0 && pResult[2] == '-' && pResult[11] == '-' && pResult[12]!='\0')
+	{
+		result = 1;
+		for(i=0;pResult[i] != '\0';i++)
+		{
+			if(pResult[i] == '-')
+			{
+				dashCounter++;
+			}
+			if(dashCounter>2 || (pResult[i] != '-' && (pResult[i] > '9' || pResult[i] < '0')))
+			{
+				result = 0;
+				break;
+			}
+		}
+	}
+	return result;
+}
+//PUBLICAS
+/* \ brief getName para pedirle al usuario que ingrese un caracter
+ * \ param char *message es un puntero al espacio de memoria donde está el mensaje que verá el usuario
+ * \ param char *userInput es el puntero al espacio de memoria donde se guarda el caracter que ingresa el usuario
+ * \ param char *errorMessage es el puntero al espacio de memoria donde está el mensaje de error que se mostrará si el usario ingresa una opción incorrecta
+ * \ param int attempts es la variable que decrementa en 1 cada vez que el usario comete un error al ingresar un caracter no válido
+ * \ return (-1) Error / (0) Ok
+ */
+int utn_getName(char message[], char errorMessage[], char* pResult, int attemps, int limit)
+{
+	int retorno = -1;
+	char bufferString[ARRAY_SIZE];
+	if (message != NULL && errorMessage != NULL && pResult != NULL && attemps >= 0)
+	{
+		do
+		{
+			printf("\n%s", message);
+			if (utn_myGets(bufferString, ARRAY_SIZE) == 0 && utn_verifyCharArray(bufferString) == 0 && strnlen(bufferString, ARRAY_SIZE) < limit)
+			{
+				retorno = 0;
+				strncpy(pResult, bufferString, limit);
+				break;
+			}
+			else
+			{
+
+				printf("%s", errorMessage);
+				attemps--;
+			}
+		}while (attemps >= 0);
+	}
+	return retorno;
+}
+/*
+ * \brief Requests a number from the user that represents a menu option
+ * \param number*, pointer to the memory space where the data obtained will be saved
+ * \param retries, opportunities to enter incorrect data
+ * \param int min, Minimum allowed value
+ * \param int max, Maximum allowed value
+ * \return (-1) to indicate error/ (0) it's OK.
  */
 
-int getNumberFloat(float *pResultado, char *mensaje, char *mensajeError,
-		float minimo, float maximo, int reintentos) {
+int utn_getMenu(int *number, int retries, int max, int min)
+{
 	int retorno = -1;
-	float bufferFloat;
-	int resultadoScan;
-	if (pResultado != NULL && mensaje != NULL && mensajeError != NULL
-			&& minimo <= maximo && reintentos > 0) {
+	char textNumber[ARRAY_SIZE];
+	if (number != NULL && min<=max && retries>=0)
+	{
+		do
+		{
+			printf( "*** Bienvenido ***\n\n- Elija una opcion:\n\n" //MENU INICIO
+					"[1] Alta de un cliente\n"
+					"[2] Vender un afiche\n"
+					"[3] Modificar los datos de una venta\n"
+					"[4] Cobrar una venta\n"
+					"[5] Generar informe de cobros\n"
+					"[6] Generar informe de deudas\n"
+					"[7] Generar estadísticas\n"
+					"[8] SALIR\n");
+			if (utn_myGets(textNumber, ARRAY_SIZE) == 0 && utn_verifyNumArray(textNumber) == 1)
+			{
+				*number = atoi(textNumber);
+				retorno = 0;
+				break;
+			}
+			else
+			{
+				retries--;
+				if (retries != 0)
+				{
+					printf("\nError, te quedan %d intentos \n", retries);
+				}
+			}
+		} while (retries > 0);
+	}
+	return retorno;
+}
+/* \brief asks user for an integer number
+ * \param char* message, message shown to user
+ * \param int* number, pointer to memory space where value obtained will be saved
+ * \param int attempts, number of attempts for the user to choose a correct number from the menu
+ * \param int max, maximum value allowed
+ * \param int min, minimum value allowed
+ * \return [-1] if error / [0] if ok
+ */
+int utn_getNumber(char *message, int *number, int attempts, int max, int min)
+{
+	int retorno = -1;
+	char bufferTextNumber[ARRAY_SIZE];
+	int bufferNumber;
+	if (message != NULL && number != NULL)
+	{
 		do {
-			printf("%s", mensaje);
-			fflush(stdin);
-			resultadoScan = getFloat(&bufferFloat);
-			if (resultadoScan && minimo <= bufferFloat && maximo >= bufferFloat) {
-				*pResultado = bufferFloat;
-				retorno = 0;
-				break;
-			} else {
-				printf("%s", mensajeError);
-				printf("\n-REINTENTOS: %d \n", reintentos);
-				reintentos--;
-			}
-
-		} while (reintentos >= 0);
-	}
-	return retorno;
-}
-
-/*
- * getFloat: verifica si la cadena ingresada es flotante
- * pFloat: puntero numero float
- * Return 1: OK. return 0:error.
- *
- */
-
-static int getFloat(float *pFloat) {
-	int retorno = 0;
-	char bufferFloat[5000];
-	if (pFloat != NULL) {
-		fflush(stdin);
-
-		if (!myGets(bufferFloat, sizeof(bufferFloat)) && isFloat(bufferFloat, sizeof(bufferFloat))) {
-			*pFloat = atof(bufferFloat);
-			retorno = 1;
-		}
-	}
-	return retorno;
-}
-
-/*
- * isFloat: Verifica si la cadena ingresada es flotante
- * cadena: cadena de caracteres a ser analizada
- * limite: limite de la cadena
- * Return: 1 (verdadero) si la cadena es flotante , 0 (falso) si no y -1 en caso de ERROR de parametro
- */
-
-static int isFloat(char *floatArr, int limite) {
-	int retorno = -1;
-	int i = 0;
-	int contadorDePuntos = 0;
-
-	if (floatArr != NULL && limite > 0) {
-		retorno = 1;
-		if (floatArr[0] != '+' || floatArr[0] != '-') {
-			i = 1;
-		}
-		while (floatArr[i] != '\0') {
-			if ((floatArr[i] < '0' || floatArr[i] > '9')
-					&& floatArr[i] != '.') {
-				retorno = 0;
-				break;
-			}
-			if (floatArr[i] == '.') {
-				contadorDePuntos++;
-				if (contadorDePuntos > 1) {
+			printf("%s\n", message);
+			if( utn_myGets(bufferTextNumber, ARRAY_SIZE) == 0 &&
+				utn_verifyNumArray(bufferTextNumber) == 1 && max >= min)
+			{
+				bufferNumber = atoi(bufferTextNumber);
+				if(bufferNumber<=max && bufferNumber>=min)
+				{
+					*number = bufferNumber;
 					retorno = 0;
 					break;
 				}
+				else
+				{
+					attempts--;
+					if (attempts != 0)
+					{
+						printf("\nError, te quedan %d intentos \n", attempts);
+					}
+				}
 			}
-			i++;
-		}
-	}
-	return retorno;
-}
-
-/*
- * \brief valida que la cadena recibida sea un string valido.
- * \param char mesaje: Mensaje impreso para obtener una cadena
- * \param char mensajeError: mensaje impreso para notificar que la cadena no cumple con las condiciones.
- * \param espacio en memoria donde copiaremos la cadena previamente validada.
- * \param int reintentos: cantidad de veces que el usuario puede volver a intentar ingresar un valor valido.
- * \param int limite: longitud de la cadena.
- * \return -1: failed  Return 0:Ok.
- */
-
-int getString(char mensaje[], char mensajeError[], char pResultado[], int reintentos, int limite) {
-	int retorno = -1;
-	char bufferChar[LIMITE_STRING];
-
-	if (mensaje != NULL && mensajeError != NULL && pResultado != NULL && reintentos > 0) {
-		do {
-			printf("%s", mensaje);
-			if(myGets(bufferChar, LIMITE_STRING) == 0 && isString(bufferChar, LIMITE_STRING) == 1 && strnlen(bufferChar, sizeof(bufferChar)) < limite)	{
-				retorno = 0;
-				strncpy(pResultado, bufferChar, limite);
-				break;
-			} else {
-			  printf("%s", mensajeError);
-			reintentos--;
-		  }
-	   } while (reintentos >= 0);
-	}
-	return retorno;
-}
-
-/*
- *brief verifica que una cadena este en el rango de caracteres para ser un nombre valido.
- *param char cadena Cadena a ser analizada
- *param int limite longitud de la cadena.
- *return 0: failed . return 1: nombre valido.
- */
-
-int isString(char cadena[], int limite) {
-	int respuesta = 1;
-	for (int i = 0; i <= limite && cadena[i] != '\0'; i++) {
-
-		if ((cadena[i] < 'A' || cadena[i] > 'Z') &&
-			(cadena[i] < 'a' || cadena[i] > 'z') &&
-			 cadena[i] != '.') {
-			 	 respuesta = 0;
-				 break;
-		}
-	}
-	return respuesta;
-}
-
-/*
- *brief Lee de stdin hasta que encuentra un '\n' o hasta que haya copiado en cadena un maximo de 'longitud -1' caracteres.
- *param char cadena: Cadena a  analizar
- *param int longitud Define el tamaño maximo de la cadena
- *return (0) OK || (-1) FAIL
- */
-
-int myGets(char cadena[], int longitud) {
-	int retorno = -1;
-
-	if (cadena != NULL && longitud > 0 && fgets(cadena, longitud, stdin) == cadena) {
-		fflush(stdin);
-			if ( cadena[strlen(cadena)- 1] == '\n' && cadena[0] != '\n') {
-				cadena[strlen(cadena) - 1] = '\0';
+			else
+			{
+				attempts--;
+				if (attempts != 0)
+				{
+					printf("\nError. Te quedan %d intentos\n", attempts);
+				}
 			}
-		retorno = 0;
+		} while (attempts > 0);
 	}
 	return retorno;
 }
-
-/*
- * \brief Mediante el ingreso de los parametros mencionados debajo, pide y realiza la validación de un número entero.
- * \param char*mensaje: pide  un número entero.
- * \param char * mensajeError: mensaje de error en caso de que las condiciones no se cumplan.
- * \param int* pResultado: puntero con el numero adquirido
- * \param int reintentos: veces en las que el usuario podra volver a ingresar un valor valido.
- * \param int maximo: valor maximo a introducir
- * \param int minimo: valor minimo a introducir.
- * \return 0 si ha salido ok. -1 si no.
- */
-
-int getNumber(char mensaje[], char  mensajeError[], int *pResultado, int reintentos, int maximo, int minimo) {
+/* \brief asks user for a float number
+ * \param char* message, message shown to user
+ * \param float* number, pointer to memory space where value obtained will be saved
+ * \param int attempts, number of attempts for the user to choose a correct number from the menu
+ * \param int max, maximum value allowed
+ * \param int min, minimum value allowed
+ * \return [-1] if error / [0] if ok
+ * */
+int utn_getNumberFloat(char *message, float *number, int attempts, int max, int min)
+{
 	int retorno = -1;
-	int bufferInt;
-
-	if (mensaje != NULL && mensajeError != NULL && pResultado != NULL
-			&& reintentos >= 0 && maximo >= minimo) {
-		do {
-			printf("%s", mensaje);
-
-			if (getInt(&bufferInt) == 0 && bufferInt >= minimo	&& bufferInt <= maximo) {
-				retorno = 0;
-				*pResultado = bufferInt;
-				break;
-			} else {
-				printf("%s", mensajeError);
-				reintentos--;
+	char bufferTextNumber[ARRAY_SIZE];
+	float bufferFloat;
+	if (message != NULL && number != NULL)
+	{
+		do
+		{
+			printf("%s\n", message);
+			if (utn_myGets(bufferTextNumber, ARRAY_SIZE) == 0
+					&& utn_verifyFloat(bufferTextNumber) == 1 && max >= min)
+			{
+				bufferFloat = atof(bufferTextNumber);
+				if(bufferFloat<=max && bufferFloat>=min)
+				{
+					*number = bufferFloat;
+					retorno = 0;
+					break;
+				}
+				else
+				{
+					attempts--;
+					if (attempts != 0)
+					{
+						printf("\nError, te quedan %d intentos \n", attempts);
+					}
+				}
 			}
-		} while (reintentos >= 0);
+			else
+			{
+				attempts--;
+				if (attempts != 0)
+				{
+					printf("\nError, te quedan %d intentos \n", attempts);
+				}
+			}
+		}while (attempts > 0);
 	}
 	return retorno;
 }
-
-int getCuitCode(char msg[], char msgError[], char pResult[], int attemps, int limit) {
-	int retorno = -1;
-	char bufferString[LIMITE_STRING];
-	if(msg != NULL && msgError != NULL && pResult != NULL && attemps >= 0) {
-		do {
+/* \brief asks user for a CUIT
+ * \param char* msg, message shown to user
+ * \param char* msgError, error message shown to user
+ * \param char* pResult, pointer to the memory space where the obtained CUIT will be saved
+ * \param int len, lenght of array
+ * \param int attempts, number of attempts for the user to write a valid CUIT
+ * \return [-1] if error / [0] if ok
+ * */
+int utn_getCuit(char* msg, char* msgError, char *pResult, int len, int attemps)
+{
+	int result = -1;
+	char bufferString[len];
+	if(msg != NULL && msgError != NULL && pResult != NULL && len>0 && attemps >= 0)
+	{
+		do
+		{
 			printf("%s", msg);
-			if(myGets(bufferString, LIMITE_STRING) == 0 &&
-			   isValidCuit(bufferString) == 1) {
-				strncpy(pResult,bufferString, limit);
-				retorno = 0;
+			if(utn_myGets(bufferString, len) == 0 && isCuit(bufferString) == 1 && strnlen(bufferString, sizeof(bufferString))<len)
+			{
+				strncpy(pResult,bufferString,len);
+				result = 0;
 				break;
-			} else {
+			}
+			else
+			{
 				printf("%s", msgError);
-				if(attemps > 0)	{
+				if(attemps>0)
+				{
 					printf("Le quedan %d intentos\n", attemps);
 				}
 				attemps--;
 			}
-		} while(attemps >= 0);
+		}while(attemps >= 0);
 	}
-	return retorno;
+	return result;
 }
-
-/* \Brief : in order to mimic a Argentinian CUIT code number , this fn evaluates if the string passed as arg matches with the simulated CUIT code mask
- * \param pResult: CUIT code
+/* \brief asks user for an alphanumeric string
+ * \param char* msg, message shown to user
+ * \param char* msgError, error message shown to user
+ * \param char* pResult, pointer to the memory space where the obtained string will be saved
+ * \param int attempts, number of attempts for the user to write a valid CUIT
+ * \param int len, lenght of array
+ * \return [-1] if error / [0] if ok
  * */
-static int isValidCuit(char cuitCode[]) {
-	int retorno;
-	if(cuitCode != NULL && strlen(cuitCode) > 0 && cuitCode[2] == '-' && cuitCode[11] == '-' && cuitCode[12] != '\0')	{
-		int dashCounter=0;
-		retorno = 1;
-		for(int i = 0;cuitCode[i] != '\0'; i++) {
-			if(cuitCode[i] == '-') {
-				dashCounter++;
-			}
-			if(dashCounter > 2 || ((cuitCode[i] < '0' || cuitCode[i] > '9') && cuitCode[i] != '-')){
-				retorno = 0;
-				break;
-			}
-		}
-	}
-	return retorno;
-}
+int utn_getStringAlphanumeric(char* msg, char* msgError, char *pResult, int attemps, int len)
+{
+    int retorno = -1;
+    char bufferString[ARRAY_SIZE];
 
-int getMenu(int *pResult, int attemps, int min, int max) {
-	int retorno = -1;
-	char bufferString[LIMITE_STRING];
-	int bufferInt;
+    if(msg != NULL && msgError != NULL && pResult != NULL && attemps >= 0)
+    {
+        do
+        {
+            printf("%s", msg);
+            if(utn_myGets(bufferString, ARRAY_SIZE) == 0 && isAlphaNumeric(bufferString) == 1 && strnlen(bufferString, sizeof(bufferString)) < len)
+            {
+                retorno = 0;
+                strncpy(pResult, bufferString, len);
+                break;
+            }
+            else
+            {
+                printf("%s", msgError);
+                attemps--;
+            }
 
-	if(pResult != NULL && attemps >= 0 && min <= max){
-		do {
-			printf("\n************ BIENVENIDO ************\n");
-			printf("\nPor favor, elija alguna de las siguientes opciones\n");
-			printf( "\n 1. Cargar los datos de los empleados desde el archivo data.csv (modo texto). "
-					"\n 2. Cargar los datos de los empleados desde el archivo data.csv (modo binario). "
-					"\n 3. Alta de empleado"
-					"\n 4. Modificar datos de empleado"
-					"\n 5. Baja de empleado"
-					"\n 6. Listar empleados"
-					"\n 7. Ordenar empleados"
-					"\n 8. Guardar los datos de los empleados en el archivo data.csv (modo texto)."
-					"\n 9. Guardar los datos de los empleados en el archivo data.csv (modo binario)."
-					"\n 10. Salir\n");
-			if(myGets(bufferString, LIMITE_STRING) == 0 && isNumericChar(bufferString) == 1) {
-				bufferInt = atoi(bufferString); //convert string to integer !
-				if(bufferInt >= min && bufferInt <= max)	{
-					*pResult = bufferInt;
-					retorno = 0;
-					break;
-				} else {
-					printf("\nError! Please, pick a valid option.\n");
-					attemps--;
-				}
-			} else {
-				printf("\nError! Please select a valid option \n. ");
-				attemps--;
-			}
-		} while(attemps >= 0);
-	}
-	return retorno;
+        }while(attemps >= 0);
+    }
+    return retorno;
 }

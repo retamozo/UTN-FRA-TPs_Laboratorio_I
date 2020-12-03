@@ -1,13 +1,23 @@
 /*
- * LinkedList.h
- *
- *  Created on: Nov 20, 2020
- *      Author: Enzo
- */
+    utest example : Unit test examples.
+    Copyright (C) <2018>  <Mauricio Davila>
 
-#ifndef LINKEDLIST_H_
-#define LINKEDLIST_H_
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
+#ifndef __LINKEDLIST
+#define __LINKEDLIST
 struct Node
 {
     void* pElement;                 //puntero al elemento (persona, empleado, etc.)
@@ -19,6 +29,7 @@ struct LinkedList
     Node* pFirstNode;
     int size;                       //cada vez que agrego o elimino un elemento size++/--
 }typedef LinkedList;
+#endif
 
 
 
@@ -42,7 +53,10 @@ int ll_containsAll(LinkedList* this,LinkedList* this2);
 LinkedList* ll_subList(LinkedList* this,int from,int to);
 LinkedList* ll_clone(LinkedList* this);
 int ll_sort(LinkedList* this, int (*pFunc)(void* ,void*), int order);
-//métodos adicionales
-int ll_map(LinkedList* this, int (*callback)(void*));
-
-#endif /* LINKEDLIST_H_ */
+int ll_map(LinkedList* this, int (*pFunc)(void*));
+int ll_map2(LinkedList* this, int (*pFunc)(void*,void*),void* pElement);
+int ll_filter(LinkedList * this, int (*pFunc)(void*));
+int ll_filterConParametros(LinkedList * this, int (*pFunc)(void*,void*), void* parameter);
+LinkedList* ll_filterClone(LinkedList* this, int (*pFunc)(void*), int option);
+int ll_reduceInt(LinkedList* this, int (*pFunc)(void*,int), int parameter);
+float ll_reduceFloat(LinkedList* this, int (*pFunc)(void*));
